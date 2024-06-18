@@ -22,6 +22,11 @@ const API_KEY =
  *  - Each option should display text equal to the name of the breed.
  * This function should execute immediately.
  */
+let selectedBreed = "";
+
+function selectBreed(id) {
+	selectedBreed = id;
+}
 
 async function initialLoad() {
 	const response = await fetch(" https://api.thecatapi.com/v1/breeds");
@@ -32,9 +37,52 @@ async function initialLoad() {
 		const option = document.createElement("option");
 		option.value = breed.id;
 		option.innerHTML = breed.name;
+
+		selectedBreed = "";
+		option.addEventListener("click", selectBreed(breed.id));
 		breedSelect.appendChild(option);
 	});
+	if (breeds.length > 0) {
+		loadBreed(breeds[0].id);
+	}
 }
+
+async function loadBreed(id) {
+	const [imageResponse, infoResponse] = await Promise.all([
+		fetch(
+			`https://api.thecatapi.com/v1/images/search?limit=10&breed_ids=${id}&api_key=REPLACE_ME`
+		),
+		fetch(`https://api.thecatapi.com/v1/breeds/${id}`),
+	]);
+	const breedImages = await imageResponse.json();
+	const breedInfo = await infoResponse.json();
+	Carousel.clear();
+	breedImages.forEach((img) => {
+		let element = Carousel.createCarouselItem(img.url, img.id, img.id);
+		Carousel.appendCarousel(element);
+	});
+	const infoContent = `
+	<h2>${breedInfo.name}</h2>
+	<p>${breedInfo.description}</p>
+	<p>life span: ${breedInfo.life_span}</p>
+	<p>Energy level:${breedInfo.energy_level}</p>
+	<p>Learn more: <a href="https://en.wikipedia.org/wiki/Abyssinian_(cat) target="_blank">click here</a></p>
+	`;
+	infoDump.innerHTML = infoContent;
+	Carousel.start();
+	let info = document.createComment("div");
+	let infoName = document.createComment("div");
+	let infoDes = document.createComment("div");
+	// infoName.innerHTML = infoForBreed[0];
+	// infoDes.innerHTML = infoForBreed[1];
+	// info.appendChild(infoName, infoDes);
+	// infoDump.appendChild(info);
+}
+breedSelect.addEventListener("change", (event) => {
+	const selectedBreedId = event.target.value;
+	loadBreed(selectedBreedId);
+});
+getFavouritesBtn.addEventListener("click", () => loadBreed(selectedBreed));
 document.addEventListener("DOMContentLoaded", initialLoad);
 
 /**
@@ -44,6 +92,7 @@ document.addEventListener("DOMContentLoaded", initialLoad);
  *  - Check the API documentation if you're only getting a single object.
  * - For each object in the response array, create a new element for the carousel.
  *  - Append each of these new elements to the carousel.
+ *
  * - Use the other data you have been given to create an informational section within the infoDump element.
  *  - Be creative with how you create DOM elements and HTML.
  *  - Feel free to edit index.html and styles.css to suit your needs, but be careful!
