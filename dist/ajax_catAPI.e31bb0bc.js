@@ -12286,9 +12286,62 @@ var selectedBreed = "";
 function selectBreed(id) {
   selectedBreed = id;
 }
+//*****Fetch*****
+// async function initialLoad() {
+// 	const response = await fetch(" https://api.thecatapi.com/v1/breeds");
+// 	const breeds = await response.json();
+// 	breedSelect.innerHTML = "";
+// 	console.log(breeds);
+// 	breeds.forEach((breed) => {
+// 		const option = document.createElement("option");
+// 		option.value = breed.id;
+// 		option.innerHTML = breed.name;
+
+// 		selectedBreed = "";
+// 		option.addEventListener("click", selectBreed(breed.id));
+// 		breedSelect.appendChild(option);
+// 	});
+// 	if (breeds.length > 0) {
+// 		loadBreed(breeds[0].id);
+// 	}
+// }
+
+//*****Axios*****
 function initialLoad() {
   return _initialLoad.apply(this, arguments);
-}
+} //*****Fetch***** */
+// async function loadBreed(id) {
+// 	const [imageResponse, infoResponse] = await Promise.all([
+// 		fetch(
+// 			`https://api.thecatapi.com/v1/images/search?limit=10&breed_ids=${id}&api_key=REPLACE_ME`
+// 		),
+// 		fetch(`https://api.thecatapi.com/v1/breeds/${id}`),
+// 	]);
+// 	const breedImages = await imageResponse.json();
+// 	const breedInfo = await infoResponse.json();
+// 	Carousel.clear();
+// 	breedImages.forEach((img) => {
+// 		let element = Carousel.createCarouselItem(img.url, img.id, img.id);
+// 		Carousel.appendCarousel(element);
+// 	});
+// 	const infoContent = `
+// 	<h2>${breedInfo.name}</h2>
+// 	<p>${breedInfo.description}</p>
+// 	<p>life span: ${breedInfo.life_span}</p>
+// 	<p>Energy level:${breedInfo.energy_level}</p>
+// 	<p>Learn more: <a href="https://en.wikipedia.org/wiki/Abyssinian_(cat) target="_blank">click here</a></p>
+// 	`;
+// 	infoDump.innerHTML = infoContent;
+// 	Carousel.start();
+// 	let info = document.createComment("div");
+// 	let infoName = document.createComment("div");
+// 	let infoDes = document.createComment("div");
+// 	// infoName.innerHTML = infoForBreed[0];
+// 	// infoDes.innerHTML = infoForBreed[1];
+// 	// info.appendChild(infoName, infoDes);
+// 	// infoDump.appendChild(info);
+// }
+//*****Axios***** */
 function _initialLoad() {
   _initialLoad = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
     var response, breeds;
@@ -12296,11 +12349,11 @@ function _initialLoad() {
       while (1) switch (_context.prev = _context.next) {
         case 0:
           _context.next = 2;
-          return fetch(" https://api.thecatapi.com/v1/breeds");
+          return _axios.default.get(" https://api.thecatapi.com/v1/breeds");
         case 2:
           response = _context.sent;
           _context.next = 5;
-          return response.json();
+          return response.data;
         case 5:
           breeds = _context.sent;
           breedSelect.innerHTML = "";
@@ -12334,18 +12387,18 @@ function _loadBreed() {
       while (1) switch (_context2.prev = _context2.next) {
         case 0:
           _context2.next = 2;
-          return Promise.all([fetch("https://api.thecatapi.com/v1/images/search?limit=10&breed_ids=".concat(id, "&api_key=REPLACE_ME")), fetch("https://api.thecatapi.com/v1/breeds/".concat(id))]);
+          return Promise.all([_axios.default.get("https://api.thecatapi.com/v1/images/search?limit=10&breed_ids=".concat(id, "&api_key=REPLACE_ME")), _axios.default.get("https://api.thecatapi.com/v1/breeds/".concat(id))]);
         case 2:
           _yield$Promise$all = _context2.sent;
           _yield$Promise$all2 = _slicedToArray(_yield$Promise$all, 2);
           imageResponse = _yield$Promise$all2[0];
           infoResponse = _yield$Promise$all2[1];
           _context2.next = 8;
-          return imageResponse.json();
+          return imageResponse.data;
         case 8:
           breedImages = _context2.sent;
           _context2.next = 11;
-          return infoResponse.json();
+          return infoResponse.data;
         case 11:
           breedInfo = _context2.sent;
           Carousel.clear();
@@ -12377,7 +12430,7 @@ breedSelect.addEventListener("change", function (event) {
 getFavouritesBtn.addEventListener("click", function () {
   return loadBreed(selectedBreed);
 });
-document.addEventListener("DOMContentLoaded", initialLoad);
+// document.addEventListener("DOMContentLoaded", initialLoad);
 
 /**
  * 2. Create an event handler for breedSelect that does the following:
@@ -12394,7 +12447,7 @@ document.addEventListener("DOMContentLoaded", initialLoad);
  * - Each new selection should clear, re-populate, and restart the Carousel.
  * - Add a call to this function to the end of your initialLoad function above to create the initial carousel.
  */
-// breedSelect.addEventListener("click", initialLoad);
+breedSelect.addEventListener("click", initialLoad);
 
 /**
  * 3. Fork your own sandbox, creating a new one named "JavaScript Axios Lab."
